@@ -118,7 +118,7 @@ async function main() {
             '--network-secret', process.env.ET_NET_SECRET || '123456',           
             '-p', process.env.ET_PEER_URL || 'wss://0.0.0.0:2053',   
             '-n', '0.0.0.0/0',               
-            '--socks5', process.env.ET_SOCKS_PORT || '8025',               
+            '--socks5', process.env.ET_SOCKS_PORT || '8024',               
             '--no-tun'                        
         ]
     };
@@ -169,3 +169,4 @@ async function main() {
 }
 
 main();
+
