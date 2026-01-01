@@ -97,11 +97,11 @@ async function main() {
         binName: 'easytier-core',
         args: [
             '-i', '10.155.155.25',
-            '--network-name', 'oo',           
-            '--network-secret', '123456',           
-            '-p', 'wss://ww.ww.ww.ww.:2053',   
+            '--network-name', process.env.ET_NET_NAME,           
+            '--network-secret', process.env.ET_NET_SECRET,           
+            '-p', process.env.ET_PEER_URL,   
             '-n', '0.0.0.0/0',               
-            '--socks5', '8025',               
+            '--socks5', process.env.ET_SOCKS_PORT,               
             '--no-tun'                        
         ]
     };
