@@ -1,5 +1,5 @@
 # 使用较新的 Node 20
-FROM node:18-slim
+FROM node:20-slim
 
 # 安装系统基础依赖（保留你的写法，这很好，增加了兼容性）
 RUN apt-get update && \
