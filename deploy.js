@@ -1,16 +1,15 @@
-// deploy.js - Hugging Face 专用【多资源兼容 + 隐私增强版】
+// deploy.js - Hugging Face/Railway 专用【调试修复版】
 const fs = require('fs');
 const path = require('path');
 const https = require('https');
 const http = require('http'); 
 const { spawn } = require('child_process');
 
-// --- [核心修改] 网页服务器：现在支持读取图片了 ---
+// --- 1. 网页服务器 (保持不变) ---
 function startWebInterface() {
-    const port = 7860; // 必须是 7860
+    const port = 7860;
     
     http.createServer((req, res) => {
-        // 1. 处理背景图片请求
         if (req.url === '/bg.png') {
             const imgPath = path.join(__dirname, 'bg.png');
             try {
@@ -18,14 +17,13 @@ function startWebInterface() {
                     const img = fs.readFileSync(imgPath);
                     res.writeHead(200, { 'Content-Type': 'image/png' });
                     res.end(img);
-                    return; // 成功发送图片后直接结束
+                    return;
                 }
             } catch (err) {
                 console.error("图片读取失败:", err);
             }
         }
 
-        // 2. 默认处理网页请求 (index.html)
         const htmlPath = path.join(__dirname, 'index.html');
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         try {
@@ -39,17 +37,16 @@ function startWebInterface() {
     });
 }
 
-// --- 身份显示 ---
+// --- 2. 身份显示 ---
 function setIdentity(newName) {
     console.log(`--- 🆔 身份设定: ${newName} ---`);
     process.title = newName;
 }
 
-// 执行初始化
 setIdentity("Coral-Station");
 startWebInterface();
 
-// 依赖库检查
+// --- 3. 依赖库检查 ---
 let AdmZip;
 try {
     AdmZip = require('adm-zip');
@@ -60,7 +57,7 @@ try {
 
 const TEMP_DIR = path.join(__dirname, 'temp_src');
 
-// 工具函数：下载与解压
+// --- 4. 下载工具 ---
 async function downloadFile(url, destPath) {
     console.log(`⬇️ 正在下载资源...`);
     return new Promise((resolve, reject) => {
@@ -103,22 +100,33 @@ function findFile(startDir, fileName) {
     return null;
 }
 
-// --- 主流程 ---
+// --- 5. 主流程 (这是改动最大的地方) ---
 async function main() {
     if (fs.existsSync(TEMP_DIR)) fs.rmSync(TEMP_DIR, { recursive: true, force: true });
     fs.mkdirSync(TEMP_DIR);
+
+    // 👇👇👇 这里的日志放在了这里，不会报错了 👇👇👇
+    console.log("=============== 🔍 环境变量大体检 ===============");
+    console.log("1. 网络名称 (NET_NAME):", process.env.ET_NET_NAME);
+    console.log("2. 密码     (NET_SECRET):", process.env.ET_NET_SECRET ? "****** (已设置)" : "undefined (未设置!)");
+    console.log("3. 对端地址 (PEER_URL):", process.env.ET_PEER_URL);
+    console.log("4. 服务器IP (SERVER_IP):", process.env.ET_SERVER_IP);
+    console.log("5. 端口号   (SOCKS_PORT):", process.env.ET_SOCKS_PORT);
+    console.log("==================================================");
+    // 👆👆👆 检查结束 👆👆👆
 
     const etConfig = {
         url: 'https://github.com/EasyTier/EasyTier/releases/download/v2.4.5/easytier-linux-x86_64-v2.4.5.zip',
         zipName: 'easytier.zip',
         binName: 'easytier-core',
         args: [
-            '-i', process.env.ET_SERVER_IP|| '10.155.155.11',
-            '--network-name', process.env.ET_NET_NAME,           
-            '--network-secret', process.env.ET_NET_SECRET,           
-            '-p', process.env.ET_PEER_URL,   
-            '-n', '0.0.0.0/0',               
-            '--socks5', process.env.ET_SOCKS_PORT|| '8011',               
+            // 这里把参数都按照标准格式加回来了
+            '-i', process.env.ET_SERVER_IP,
+            '--network-name', process.env.ET_NET_NAME,            
+            '--network-secret', process.env.ET_NET_SECRET,            
+            '-p', process.env.ET_PEER_URL,    
+            '-n', '0.0.0.0/0',                
+            '--socks5', process.env.ET_SOCKS_PORT,                
             '--no-tun'                        
         ]
     };
@@ -169,9 +177,3 @@ async function main() {
 }
 
 main();
-
-
-
-
-
-
