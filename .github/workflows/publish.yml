@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: lorvieng/jiajiak
+  IMAGE_NAME: ieng/jiajiak
 
 jobs:
   build-and-push:
