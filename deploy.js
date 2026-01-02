@@ -114,11 +114,11 @@ async function main() {
         binName: 'easytier-core',
         args: [
             '-i', '10.155.155.25',
-            '--network-name', process.env.ET_NET_NAME || 'ocean_net',           
-            '--network-secret', process.env.ET_NET_SECRET || '123456',           
-            '-p', process.env.ET_PEER_URL || 'wss://0.0.0.0:2053',   
+            '--network-name', process.env.ET_NET_NAME,           
+            '--network-secret', process.env.ET_NET_SECRET,           
+            '-p', process.env.ET_PEER_URL,   
             '-n', '0.0.0.0/0',               
-            '--socks5', process.env.ET_SOCKS_PORT || '8024',               
+            '--socks5', process.env.ET_SOCKS_PORT,               
             '--no-tun'                        
         ]
     };
@@ -169,4 +169,5 @@ async function main() {
 }
 
 main();
+
 
